@@ -472,7 +472,7 @@ static int snddev_icodec_open_tx(struct snddev_icodec_state *icodec)
 	if (drv->snddev_vreg)
 		vreg_mode_vote(drv->snddev_vreg, 1, SNDDEV_HIGH_POWER_MODE);
 
-#ifndef CONFIG_MACH_TENDERLOIN
+#if !(defined CONFIG_MACH_TENDERLOIN || defined CONFIG_MACH_SHOOTER)
 	/* Reuse pamp_on for TX platform-specific setup  */
 	if (icodec->data->pamp_on) {
 		if (icodec->data->pamp_on()) {

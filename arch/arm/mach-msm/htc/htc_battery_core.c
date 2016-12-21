@@ -844,13 +844,14 @@ static ssize_t htc_battery_show_property(struct device *dev,
 		else
 			i += scnprintf(buf + i, PAGE_SIZE - i, "%d\n", 1);
 		break;
-#endif
+#else
 	case BATT_CABLEIN:
 		if(battery_core_info.rep.charging_source == CHARGER_BATTERY)
 			i += scnprintf(buf + i, PAGE_SIZE - i, "%d\n", 0);
 		else
 			i += scnprintf(buf + i, PAGE_SIZE - i, "%d\n", 1);
 		break;
+#endif
 	default:
 		i = -EINVAL;
 	}
