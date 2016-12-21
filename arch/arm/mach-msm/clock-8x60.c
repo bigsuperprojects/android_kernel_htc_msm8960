@@ -3726,6 +3726,7 @@ static struct clk_lookup msm_clocks_8x60[] = {
 	CLK_LOOKUP("csi_src_clk",	csi_src_clk.c,		NULL),
 	CLK_LOOKUP("byte_clk",	dsi_byte_clk.c,		"mipi_dsi.1"),
 	CLK_LOOKUP("esc_clk",	dsi_esc_clk.c,		"mipi_dsi.1"),
+	CLK_LOOKUP("dsi_byte_div_clk",	dsi_byte_clk.c,		NULL),
 	CLK_LOOKUP("core_clk",		gfx2d0_clk.c,	"kgsl-2d0.0"),
 	CLK_LOOKUP("core_clk",		gfx2d0_clk.c,	"footswitch-8x60.0"),
 	CLK_LOOKUP("core_clk",		gfx2d1_clk.c,	"kgsl-2d1.1"),
