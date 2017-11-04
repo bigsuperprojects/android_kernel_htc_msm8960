@@ -715,11 +715,29 @@ config VP_A1028
 	help
 	  A1028 Voice Processor driver implemented by HTC.
 
+config VP_A2220
+	tristate "A2220 Voice Processor driver"
+	depends on I2C
+	help
+	  A2220 Voice Processor Driver implemented by ysseo.
+
+config USE_A2220_B
+	tristate "A2220_B Voice Processor Driver"
+	depends on VP_A2220
+	help
+	  This option support audience A2220_B chip
+
 config SENSORS_NFC_PN544
 	tristate "PN544 NFC Sensor driver"
 	depends on I2C
 	help
 	  PN544 NFC driver.
+
+config SENSORS_YDA165
+	bool "YDA165 Audio Amp Driver"
+	depends on I2C
+	help
+	 YDA165 Audio AMP
 
 config AMP_TFA9887
 	tristate "NXP TFA9887 Speaker AMP Driver"
@@ -781,6 +799,19 @@ config MDMGPIO
 
 	  This driver can also be built as a module, choose M here: the
 	  module will be called mdmgpio.
+
+config VIBETONZ
+        tristate "Vibetonz"
+        default n
+        help
+          Say Y to enable Vibetonz support.
+
+config SAMSUNG_JACK
+	bool "3.5 PI EAR_JACK driver for Samsung devices"
+	depends on INPUT
+	default n
+	---help---
+	  This is 3.5 PI EAR_JACK driver for Samsung devices.
 
 config UID_CPUTIME
 	tristate "Per-UID cpu time statistics"

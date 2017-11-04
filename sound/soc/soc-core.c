@@ -1345,11 +1345,22 @@ static int soc_probe_dai_link(struct snd_soc_card *card, int num, int order)
 	if (ret < 0)
 		printk(KERN_WARNING "asoc: failed to add pmdown_time sysfs\n");
 
-	/* create the pcm */
-	ret = soc_new_pcm(rtd, num);
-	if (ret < 0) {
-		printk(KERN_ERR "asoc: can't create pcm %s\n", dai_link->stream_name);
-		return ret;
+	if (cpu_dai->driver->compress_dai) {
+		/*create compress_device"*/
+		ret = soc_new_compress(rtd, num);
+		if (ret < 0) {
+		  printk(KERN_ERR "asoc: can't create compress %s\n",
+					 dai_link->stream_name);
+			return ret;
+		}
+	} else {
+		/* create the pcm */
+		ret = soc_new_pcm(rtd, num);
+		if (ret < 0) {
+		  printk(KERN_ERR "asoc: can't create pcm %s :%d\n",
+			       dai_link->stream_name, ret);
+			return ret;
+		}
 	}
 
 	/* add platform data for AC97 devices */
@@ -2035,6 +2046,10 @@ unsigned int snd_soc_read(struct snd_soc_codec *codec, unsigned int reg)
 {
 	unsigned int ret;
 
+	if (unlikely(!snd_card_is_online_state(codec->card->snd_card))) {
+		dev_err(codec->dev, "read 0x%02x while offline\n", reg);
+		return -ENODEV;
+	}
         if (codec->read) {
 		ret = codec->read(codec, reg);
 		dev_dbg(codec->dev, "read %x => %x\n", reg, ret);
@@ -2050,6 +2065,10 @@ EXPORT_SYMBOL_GPL(snd_soc_read);
 unsigned int snd_soc_write(struct snd_soc_codec *codec,
 			   unsigned int reg, unsigned int val)
 {
+	if (unlikely(!snd_card_is_online_state(codec->card->snd_card))) {
+		dev_err(codec->dev, "write 0x%02x while offline\n", reg);
+		return -ENODEV;
+	}
 	if (codec->write) {
 		dev_dbg(codec->dev, "write %x = %x\n", reg, val);
 		trace_snd_soc_reg_write(codec, reg, val);
@@ -3568,6 +3587,17 @@ static void fixup_codec_formats(struct snd_soc_pcm_stream *stream)
 		if (stream->formats & codec_format_map[i])
 			stream->formats |= codec_format_map[i];
 }
+
+/**
+ * snd_soc_card_change_online_state - Mark if soc card is online/offline
+ *
+ * @soc_card : soc_card to mark
+ */
+void snd_soc_card_change_online_state(struct snd_soc_card *soc_card, int online)
+{
+	snd_card_change_online_state(soc_card->snd_card, online);
+}
+EXPORT_SYMBOL(snd_soc_card_change_online_state);
 
 /**
  * snd_soc_register_codec - Register a codec with the ASoC core

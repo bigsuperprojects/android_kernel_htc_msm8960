@@ -1,0 +1,58 @@
+config MACH_SAMSUNG
+	bool
+
+menu "SAMSUNG Board Selection"
+source "arch/arm/mach-msm/samsung/Kconfig.board"
+endmenu
+
+menu "SAMSUNG Specific Patches"
+
+choice
+	prompt "Target Locale"
+	default TARGET_LOCALE_USA
+
+	config TARGET_LOCALE_KOR
+		bool "Locale KOR "
+		help
+		  Support Korea SKT Board
+
+	config TARGET_LOCALE_USA
+		bool "Locale USA "
+		help
+		  Support USA Board
+
+	config TARGET_LOCALE_JPN
+		bool "Locale JPN "
+		help
+		  Support JPN Board
+
+	config TARGET_LOCALE_EUR
+		bool "Locale EUR "
+		help
+		  Support EUR Board
+endchoice
+
+config BATTERY_SEC
+	bool "SEC battery driver"
+	default n
+	help
+	  Say Y here to enable support for batteries with SEC features.
+
+config SEC_AUDIO_DEVICE
+	bool "Sec AUDIO DEVICE"
+	help
+	  Support Sec audio Device
+
+config SEC_AUDIO_I2S_DRIVING_CURRENT
+	bool "Sec I2S Driving Current"
+	default n
+	help
+	  Support I2S driving current up
+
+config SEC_EXTRA_VOLUME_SOL
+	bool "Sec Extra Volume Solution"
+	default n
+	help
+	  Support Sec Extra Volume Solution
+
+endmenu

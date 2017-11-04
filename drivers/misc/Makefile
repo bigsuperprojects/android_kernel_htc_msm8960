@@ -53,12 +53,20 @@ obj-y				+= ti-st/
 obj-$(CONFIG_AB8500_PWM)	+= ab8500-pwm.o
 obj-y				+= lis3lv02d/
 obj-y				+= carma/
+ifeq ($(CONFIG_MACH_SAMSUNG),y)
+obj-$(CONFIG_USB_SWITCH_FSA9480) += fsa9480-sec.o
+else
 obj-$(CONFIG_USB_SWITCH_FSA9480) += fsa9480.o
+endif
 obj-$(CONFIG_ALTERA_STAPL)	+=altera-stapl/
 obj-$(CONFIG_MAX8997_MUIC)	+= max8997-muic.o
 obj-$(CONFIG_WL127X_RFKILL)	+= wl127x-rfkill.o
 obj-$(CONFIG_APANIC)		+= apanic.o
+ifeq ($(CONFIG_MACH_SAMSUNG),y)
+obj-$(CONFIG_SENSORS_AK8975)	+= ak8975.o
+else
 obj-$(CONFIG_SENSORS_AK8975)	+= akm8975.o
+endif
 obj-$(CONFIG_TSIF) += msm_tsif.o
 msm_tsif-objs := tsif.o
 obj-$(CONFIG_TSIF_CHRDEV) += tsif_chrdev.o
@@ -79,12 +87,22 @@ obj-$(CONFIG_PMIC8058_XOADC) += pmic8058-xoadc.o
 endif
 obj-$(CONFIG_QSEECOM) += qseecom.o
 obj-$(CONFIG_QFP_FUSE) += qfp_fuse.o
+ifeq ($(CONFIG_VIBETONZ),y)
+obj-y += vibetonz/
+else
 obj-y += tspdrv/
+endif
 obj-$(CONFIG_BU52031NVX) += pm8xxx-cradle.o
 obj-$(CONFIG_SLIMPORT_ANX7808)	+= slimport_anx7808/
 obj-$(CONFIG_CABLE_DETECT_8XXX)	+= cable_detect_8xxx.o
 obj-$(CONFIG_VP_A1028)		+= a1028.o
+ifneq ($(CONFIG_USE_A2220_B),y)
+obj-$(CONFIG_VP_A2220)		+= a2220.o
+else
+obj-$(CONFIG_VP_A2220)		+= a2220b.o
+endif
 obj-$(CONFIG_SENSORS_NFC_PN544)	+= pn544.o
+obj-$(CONFIG_SENSORS_YDA165)    += yda165.o
 obj-$(CONFIG_AMP_TFA9887)	+= tfa9887.o
 obj-$(CONFIG_AMP_TFA9887L)	+= tfa9887l.o
 obj-$(CONFIG_AMP_RT5501)	+= rt5501.o
@@ -95,5 +113,6 @@ obj-$(CONFIG_USER_PINS)		+= user-pins.o
 obj-$(CONFIG_KERNEL_LOG)	+= klog.o
 obj-$(CONFIG_HSUART)		+= hsuart.o hsuart_tty.o
 obj-$(CONFIG_MDMGPIO)		+= mdmgpio.o
+obj-$(CONFIG_SAMSUNG_JACK) += sec_jack.o
 obj-$(CONFIG_FPR_SPI)		+= fpr/
 obj-$(CONFIG_UID_CPUTIME) += uid_cputime.o

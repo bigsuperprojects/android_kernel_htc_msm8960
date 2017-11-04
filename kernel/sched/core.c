@@ -114,6 +114,9 @@ void start_bandwidth_timer(struct hrtimer *period_timer, ktime_t period)
 
 DEFINE_MUTEX(sched_domains_mutex);
 DEFINE_PER_CPU_SHARED_ALIGNED(struct rq, runqueues);
+#if defined(CONFIG_FAST_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
+DEFINE_PER_CPU_SHARED_ALIGNED(struct nr_stats_s, runqueue_stats);
+#endif
 
 #ifdef CONFIG_INTELLI_PLUG
 DEFINE_PER_CPU_SHARED_ALIGNED(struct nr_stats_s, runqueue_stats);
@@ -2371,19 +2374,7 @@ unsigned long nr_iowait(void)
 	return sum;
 }
 
-unsigned long nr_iowait_cpu(int cpu)
-{
-	struct rq *this = cpu_rq(cpu);
-	return atomic_read(&this->nr_iowait);
-}
-
-unsigned long this_cpu_load(void)
-{
-	struct rq *this = this_rq();
-	return this->cpu_load[0];
-}
-
-#ifdef CONFIG_INTELLI_PLUG
+#if defined(CONFIG_FAST_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 unsigned long avg_nr_running(void)
 {
 	unsigned long i, sum = 0;
@@ -2412,6 +2403,19 @@ unsigned long avg_nr_running(void)
 	return sum;
 }
 EXPORT_SYMBOL(avg_nr_running);
+#endif
+
+unsigned long nr_iowait_cpu(int cpu)
+{
+	struct rq *this = cpu_rq(cpu);
+	return atomic_read(&this->nr_iowait);
+}
+
+unsigned long this_cpu_load(void)
+{
+	struct rq *this = this_rq();
+	return this->cpu_load[0];
+}
 
 unsigned long avg_cpu_nr_running(unsigned int cpu)
 {
@@ -2436,7 +2440,6 @@ unsigned long avg_cpu_nr_running(unsigned int cpu)
 	return ave_nr_running;
 }
 EXPORT_SYMBOL(avg_cpu_nr_running);
-#endif
 
 /*
  * Global load-average calculations
@@ -6520,7 +6523,7 @@ static const struct cpumask *cpu_cpu_mask(int cpu)
 	return cpumask_of_node(cpu_to_node(cpu));
 }
 
-int sched_smt_power_savings = 0, sched_mc_power_savings = 0;
+int sched_smt_power_savings = 0, sched_mc_power_savings = 2;
 
 struct sd_data {
 	struct sched_domain **__percpu sd;

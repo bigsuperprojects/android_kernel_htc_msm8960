@@ -12,6 +12,12 @@ menuconfig INPUT_MISC
 
 if INPUT_MISC
 
+config ENHANCED_BLN
+	bool "Enhanced BLN support for backlight notifications"
+	help
+	  Say Y here to use the keypad's backlight as a notification LED for
+	  Android (modified liblights required).
+
 config INPUT_88PM860X_ONKEY
 	tristate "88PM860x ONKEY support"
 	depends on MFD_88PM860X
@@ -815,5 +821,25 @@ config SENSORS_LSM330_GYRO
 	  accelerometer will be called LSM330.
 
 	  Say Y here if you have a device containing LSM330 chip.
+
+config OPTICAL_GP2A
+	depends on I2C
+	tristate "GP2A driver"
+	default n
+	help
+	  This option enables proximity & light sensors using gp2a driver.
+
+config SENSORS_K3DH
+	tristate "K3DH acceleration sensor support"
+	depends on I2C
+        default n
+	help
+	  Driver for STMicroelectronic K3DH accelerometer.
+
+config GYRO_K3G
+	tristate "K3G driver for s5pc210"
+	default n
+	help
+	  This option enables gyro sensors using K3G driver.
 
 source "drivers/input/misc/mpu3050/Kconfig"

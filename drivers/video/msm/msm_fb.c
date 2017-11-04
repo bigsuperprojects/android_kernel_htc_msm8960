@@ -411,11 +411,7 @@ static ssize_t mdp_set_rgb(struct device *dev,
 	memset(&pcc_cfg, 0, sizeof(struct mdp_pcc_cfg_data));
 
 	pcc_cfg.block = MDP_BLOCK_DMA_P;
-	if (r == 32768 && g == 32768 && b == 32768)
-		pcc_cfg.ops = MDP_PP_OPS_DISABLE;
-	else
-		pcc_cfg.ops = MDP_PP_OPS_ENABLE;
-	pcc_cfg.ops |= MDP_PP_OPS_WRITE;
+	pcc_cfg.ops = MDP_PP_OPS_ENABLE | MDP_PP_OPS_WRITE;
 	pcc_cfg.r.r = r;
 	pcc_cfg.g.g = g;
 	pcc_cfg.b.b = b;
@@ -592,6 +588,12 @@ static int msm_fb_probe(struct platform_device *pdev)
 #endif
 
 	bf_supported = mdp4_overlay_borderfill_supported();
+
+#ifdef CONFIG_MACH_SAMSUNG
+	/* don't move below */
+	if (mfd->vsync_init != NULL)
+		mfd->vsync_init(0);
+#endif
 
 	rc = msm_fb_register(mfd);
 	if (rc)
