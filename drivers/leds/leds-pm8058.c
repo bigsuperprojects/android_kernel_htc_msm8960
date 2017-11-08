@@ -18,7 +18,8 @@
 #include <linux/leds.h>
 #include <linux/workqueue.h>
 #include <linux/pwm.h>
-#include <linux/android_alarm.h>
+#include <linux/alarmtimer.h>
+//#include <linux/android_alarm.h>
 #include <linux/pmic8058-pwm.h>
 #include <linux/leds-pm8058.h>
 #include <linux/wakelock.h>
@@ -149,12 +150,13 @@ static void led_work_func(struct work_struct *work)
 		charming_led_enable(0);
 }
 
-static void led_alarm_handler(struct alarm *alarm)
+static enum alarmtimer_restart led_alarm_handler(struct alarm *alarm, ktime_t now)
 {
 	struct pm8058_led_data *ldata;
 
 	ldata = container_of(alarm, struct pm8058_led_data, led_alarm);
 	queue_work(g_led_work_queue, &ldata->led_work);
+	return ALARMTIMER_NORESTART;
 }
 
 static void pm8058_pwm_led_brightness_set(struct led_classdev *led_cdev,
@@ -446,8 +448,8 @@ static ssize_t pm8058_led_off_timer_store(struct device *dev,
 	cancel_work_sync(&ldata->led_work);
 	if (off_timer) {
 		interval = ktime_set(off_timer, 0);
-		next_alarm = ktime_add(alarm_get_elapsed_realtime(), interval);
-		alarm_start_range(&ldata->led_alarm, next_alarm, next_alarm);
+		next_alarm = ktime_add(ktime_get_boottime(), interval);
+		alarm_start_relative(&ldata->led_alarm, next_alarm);
 	}
 	return count;
 }
@@ -701,7 +703,7 @@ static int pm8058_led_probe(struct platform_device *pdev)
 			}
 			INIT_WORK(&ldata[i].led_work, led_work_func);
 			alarm_init(&ldata[i].led_alarm,
-				   ANDROID_ALARM_ELAPSED_REALTIME_WAKEUP,
+				   ALARM_REALTIME,
 				   led_alarm_handler);
 		}
 	}

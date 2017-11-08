@@ -18,7 +18,8 @@
 
 #include <linux/leds.h>
 #include <linux/workqueue.h>
-#include <linux/android_alarm.h>
+//#include <linux/android_alarm.h>
+#include <linux/alarmtimer.h>
 
 #define	PM_PWM_CLK_1KHZ		0
 #define	PM_PWM_CLK_32KHZ	1

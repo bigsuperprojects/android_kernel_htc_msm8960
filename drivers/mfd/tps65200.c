@@ -26,7 +26,8 @@
 #include <linux/power_supply.h>
 #include <linux/spinlock.h>
 #include <linux/wakelock.h>
-#include <linux/android_alarm.h>
+#include <linux/alarmtimer.h>
+//#include <linux/android_alarm.h>
 #include <linux/usb/android_composite.h>
 #include <mach/board_htc.h>
 #include <mach/board.h>
@@ -88,8 +89,8 @@ static void tps65200_set_check_alarm(void)
 	ktime_t next_alarm;
 
 	interval = ktime_set(TPS65200_CHECK_INTERVAL, 0);
-	next_alarm = ktime_add(alarm_get_elapsed_realtime(), interval);
-	alarm_start_range(&tps65200_check_alarm, next_alarm, next_alarm);
+	next_alarm = ktime_add(ktime_get_boottime(), interval);
+	alarm_start_relative(&tps65200_check_alarm, next_alarm);
 }
 
 
@@ -725,9 +726,10 @@ static void kick_tps_watchdog(struct work_struct *work)
 	return;
 }
 
-static void tps65200_check_alarm_handler(struct alarm *alarm)
+static enum alarmtimer_restart tps65200_check_alarm_handler(struct alarm *alarm, ktime_t now)
 {
 	queue_work(tps65200_wq, &check_alarm_work);
+	return ALARMTIMER_NORESTART;
 }
 
 static void check_alarm_work_func(struct work_struct *work)
@@ -794,7 +796,7 @@ static int tps65200_probe(struct i2c_client *client,
 	
 	INIT_WORK(&check_alarm_work, check_alarm_work_func);
 	alarm_init(&tps65200_check_alarm,
-			ANDROID_ALARM_ELAPSED_REALTIME_WAKEUP,
+			ALARM_REALTIME,
 			tps65200_check_alarm_handler);
 
 #ifdef CONFIG_SUPPORT_DQ_BATTERY
